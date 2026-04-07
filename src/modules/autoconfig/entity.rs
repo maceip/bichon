@@ -17,8 +17,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-use autoconfig::config::OAuth2Config as XOAuth2Config;
 use poem_openapi::Object;
+
+use super::mozilla_config::OAuth2Config as MozillaOAuth2Config;
 use serde::{Deserialize, Serialize};
 
 use crate::modules::account::entity::Encryption;
@@ -55,8 +56,8 @@ pub struct OAuth2Config {
     pub token_url: String,
 }
 
-impl From<&XOAuth2Config> for OAuth2Config {
-    fn from(value: &XOAuth2Config) -> Self {
+impl From<&MozillaOAuth2Config> for OAuth2Config {
+    fn from(value: &MozillaOAuth2Config) -> Self {
         Self {
             issuer: value.issuer().into(),
             scope: value.scope().into_iter().map(Into::into).collect(),

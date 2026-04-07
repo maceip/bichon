@@ -29,7 +29,9 @@ use native_model::{native_model, Model};
 use serde::{Deserialize, Serialize};
 
 pub mod entity;
+mod fetch;
 pub mod load;
+mod mozilla_config;
 #[cfg(test)]
 mod tests;
 
