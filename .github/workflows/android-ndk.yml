@@ -23,10 +23,10 @@ jobs:
           ndk-version: r27c
           link-to-sdk: true
 
-      - name: Cross-compile (API 36, server-only features)
+      - name: Cross-compile (API 36, server-only features, release)
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_API_LEVEL: "36"
         run: |
           chmod +x scripts/android-build.sh
-          ./scripts/android-build.sh
+          ./scripts/android-build.sh --release
