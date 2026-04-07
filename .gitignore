@@ -2,3 +2,5 @@
 .vscode
 .idea
 config.toml
+# Populated by `pnpm run build` in web/; build.rs creates a compile-time stub if missing.
+/web/dist
