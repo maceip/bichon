@@ -19,6 +19,8 @@
 
 #[tokio::test]
 async fn test() {
-    let config = autoconfig::from_addr("test@gmail.com").await.unwrap();
+    let config = crate::modules::autoconfig::fetch::from_addr("test@gmail.com")
+        .await
+        .unwrap();
     println!("{:#?}", config);
 }

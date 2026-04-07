@@ -32,6 +32,7 @@ use bichon::{
     },
     raise_error,
 };
+#[cfg(feature = "mimalloc")]
 use mimalloc::MiMalloc;
 use tracing::{error, info};
 
@@ -39,6 +40,7 @@ use bichon::modules::{
     common::signal::SignalManager, settings::dir::DataDirManager, users::manager::UserManager,
 };
 
+#[cfg(feature = "mimalloc")]
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
 

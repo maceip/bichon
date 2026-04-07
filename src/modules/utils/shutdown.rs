@@ -21,20 +21,19 @@ use tokio::signal;
 
 pub(crate) async fn shutdown_signal() {
     let ctrl_c_signal = async {
-        signal::ctrl_c()
-            .await
-            .expect("Error installing Ctrl+C signal handler");
+        let _ = signal::ctrl_c().await;
     };
 
-    #[cfg(unix)]
+    #[cfg(all(unix, not(target_os = "android")))]
     let terminate_signal = async {
-        signal::unix::signal(signal::unix::SignalKind::terminate())
-            .expect("Error installing terminate signal handler")
-            .recv()
-            .await;
+        if let Ok(mut sig) = signal::unix::signal(signal::unix::SignalKind::terminate()) {
+            sig.recv().await;
+        } else {
+            std::future::pending::<()>().await;
+        }
     };
 
-    #[cfg(not(unix))]
+    #[cfg(any(not(unix), target_os = "android"))]
     let terminate_signal = std::future::pending::<()>();
 
     tokio::select! {

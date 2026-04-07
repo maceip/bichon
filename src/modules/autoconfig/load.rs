@@ -18,6 +18,8 @@
 
 
 use crate::modules::autoconfig::entity::{MailServerConfig, ServerConfig};
+use crate::modules::autoconfig::fetch;
+use crate::modules::autoconfig::mozilla_config::{SecurityType, Server, ServerType};
 use crate::modules::error::code::ErrorCode;
 use crate::{
     modules::{
@@ -25,7 +27,6 @@ use crate::{
     },
     raise_error,
 };
-use autoconfig::config::{Server, ServerType};
 use email_address::EmailAddress;
 use std::str::FromStr;
 use tracing::error;
@@ -47,7 +48,7 @@ pub async fn resolve_autoconfig(
         return Ok(Some(cached_entity.config));
     }
 
-    let config = autoconfig::from_addr(email_address.email().as_ref())
+    let config = fetch::from_addr(email_address.email().as_ref())
         .await
         .map_err(|e| {
             error!(email = %email, domain = %domain, error = ?e, "Autoconfig fetch failed");
@@ -76,9 +77,9 @@ pub async fn resolve_autoconfig(
         server
             .security_type()
             .map_or(Encryption::None, |encryption| match encryption {
-                autoconfig::config::SecurityType::Plain => Encryption::None,
-                autoconfig::config::SecurityType::Starttls => Encryption::StartTls,
-                autoconfig::config::SecurityType::Tls => Encryption::Ssl,
+                SecurityType::Plain => Encryption::None,
+                SecurityType::Starttls => Encryption::StartTls,
+                SecurityType::Tls => Encryption::Ssl,
             })
     };
 

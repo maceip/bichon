@@ -19,6 +19,7 @@
 pub mod account;
 pub mod autoconfig;
 pub mod cache;
+#[cfg(feature = "cli-tools")]
 pub mod cli;
 pub mod common;
 pub mod context;

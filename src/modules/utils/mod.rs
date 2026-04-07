@@ -125,9 +125,19 @@ macro_rules! run_with_timeout {
 #[macro_export]
 macro_rules! free_memory {
     () => {{
-        let mut sys = sysinfo::System::new_all();
-        sys.refresh_memory();
-        sys.free_memory()
+        {
+            #[cfg(all(not(target_os = "android"), feature = "system-stats"))]
+            {
+                use sysinfo::System;
+                let mut sys = System::new_all();
+                sys.refresh_memory();
+                sys.free_memory()
+            }
+            #[cfg(not(all(not(target_os = "android"), feature = "system-stats")))]
+            {
+                0u64
+            }
+        }
     }};
 }
 
