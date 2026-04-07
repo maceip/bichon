@@ -26,6 +26,24 @@ The server binary is intended to run on-device with a persistent data directory 
 
    If `android-36` is not present in your NDK, use an installed API level (for example `35`) via `ANDROID_API_LEVEL`.
 
+### Verified toolchain
+
+A full **`--release`** build of `bichon` for **`aarch64-linux-android`** completed successfully with:
+
+- Android NDK **30.0.14904198** (`aarch64-linux-android36-clang`)
+- Rust **1.94.1** stable, `cargo build --target aarch64-linux-android --no-default-features --release`
+
+Output binary: `target/aarch64-linux-android/release/bichon`.
+
+To run the same flow on a remote host that already has SDK/NDK installed, sync the tree (omit `.git` and `target`), then:
+
+```bash
+cd ~/bichon-android-build
+export ANDROID_NDK_HOME="$HOME/Android/Sdk/ndk/30.0.14904198"
+export ANDROID_API_LEVEL=36
+./scripts/android-build.sh --release
+```
+
 4. **Web UI**: before release builds that should ship the real UI, run `pnpm install && pnpm run build` in `web/`. If `web/dist` is missing, `build.rs` creates a minimal stub so `cargo check` still works.
 
 ## Process lifecycle
