@@ -343,13 +343,54 @@ pub struct Settings {
 
 impl Settings {
     pub fn init() -> Self {
-        let s = Self::parse();
-        if s.bichon_encrypt_password.is_none() && s.bichon_encrypt_password_file.is_none() {
-            panic!(
-                "One of --bichon_encrypt_password or --bichon_encrypt_password_file has to be set"
-            );
+        #[cfg(test)]
+        {
+            use std::ffi::OsString;
+
+            fn args_include_bichon_root(args: &[OsString]) -> bool {
+                let mut i = 0;
+                while i < args.len() {
+                    let lossy = args[i].to_string_lossy();
+                    if lossy == "--bichon-root-dir" || lossy.starts_with("--bichon-root-dir=") {
+                        return true;
+                    }
+                    i += 1;
+                }
+                false
+            }
+
+            let mut args: Vec<OsString> = std::env::args_os().collect();
+            if args.is_empty() {
+                args.push(OsString::from("bichon_test"));
+            }
+            let need_root = !args_include_bichon_root(&args[1..])
+                && env::var("BICHON_ROOT_DIR").is_err();
+            if need_root {
+                let root = tempfile::tempdir().expect("tempdir for test SETTINGS");
+                let root_path = root.path().to_path_buf();
+                std::mem::forget(root);
+                args.push(OsString::from("--bichon-root-dir"));
+                args.push(root_path.into_os_string());
+            }
+
+            let s = Self::parse_from(args);
+            if s.bichon_encrypt_password.is_none() && s.bichon_encrypt_password_file.is_none() {
+                panic!(
+                    "One of --bichon_encrypt_password or --bichon_encrypt_password_file has to be set"
+                );
+            }
+            return s;
         }
-        s
+        #[cfg(not(test))]
+        {
+            let s = Self::parse();
+            if s.bichon_encrypt_password.is_none() && s.bichon_encrypt_password_file.is_none() {
+                panic!(
+                    "One of --bichon_encrypt_password or --bichon_encrypt_password_file has to be set"
+                );
+            }
+            s
+        }
     }
 }
 
